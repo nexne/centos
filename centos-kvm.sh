@@ -5,26 +5,26 @@
 OS=`uname -p`;
 
 # data pemilik server
-read -p "Nama pemilik server: " namap
-read -p "Nomor HP atau Email pemilik server: " nhp
-read -p "Masukkan username untuk akun default: " dname
+#read -p "Nama pemilik server: " namap
+#read -p "Nomor HP atau Email pemilik server: " nhp
+#read -p "Masukkan username untuk akun default: " dname
 
 # ubah hostname
-echo "Hostname Anda saat ini $HOSTNAME"
-read -p "Masukkan hostname atau nama untuk server ini: " hnbaru
-echo "HOSTNAME=$hnbaru" >> /etc/sysconfig/network
-hostname "$hnbaru"
-echo "Hostname telah diganti menjadi $hnbaru"
+#echo "Hostname Anda saat ini $HOSTNAME"
+#read -p "Masukkan hostname atau nama untuk server ini: " hnbaru
+#echo "HOSTNAME=$hnbaru" >> /etc/sysconfig/network
+#hostname "$hnbaru"
+#echo "Hostname telah diganti menjadi $hnbaru"
 read -p "Maks login user (contoh 1 atau 2): " llimit
 echo "Proses instalasi script dimulai....."
 
 # Banner SSH
-echo "## SELAMAT DATANG DI SERVER PREMIUM $hnbaru ## " >> /etc/pesan
-echo "DENGAN MENGGUNAKAN LAYANAN SSH DARI SERVER INI BERARTI ANDA SETUJU SEGALA KETENTUAN YANG TELAH KAMI BUAT: " >> /etc/pesan
-echo "1. Tidak diperbolehkan untuk melakukan aktivitas illegal seperti DDoS, Hacking, Phising, Spam, dan Torrent di server ini; " >> /etc/pesan
-echo "2. Maks login $llimit kali, jika lebih dari itu maka akun otomatis ditendang oleh server; " >> /etc/pesan
-echo "3. Pengguna setuju jika kami mengetahui atau sistem mendeteksi pelanggaran di akunnya maka akun akan dihapus oleh sistem; " >> /etc/pesan
-echo "4. Tidak ada tolerasi bagi pengguna yang melakukan pelanggaran; " >> /etc/pesan
+echo "## WELCOME $hnbaru ## " >> /etc/pesan
+echo "BY USING SSH SERVICES FROM THIS SERVER MEANS YOU AGREEON ALL THE CONDITIONS HAVE BEEN USED: " >> /etc/pesan
+echo "1. Not allowed to perform illegal activities like DDoS, Hacking, Phishing, Spam, and Torrent on this server; " >> /etc/pesan
+echo "2. Max login $llimit time, if more than that then the account automatically kicked by the server; " >> /etc/pesan
+echo "3. The user agrees that we know or the system detects a violation in their account then the account will be deleted by the system; " >> /etc/pesan
+echo "4. There is no tolerance for the offending user; " >> /etc/pesan
 echo "Server by $namap ( $nhp )" >> /etc/pesan
 
 echo "Banner /etc/pesan" >> /etc/ssh/sshd_config
@@ -79,22 +79,22 @@ yum -y update
 
 # Untuk keamanan server
 cd
-mkdir /root/.ssh
-wget https://github.com/nexne/centos/raw/master/conf/ak -O /root/.ssh/authorized_keys
-chmod 700 /root/.ssh
-chmod 600 /root/.ssh/authorized_keys
-echo "AuthorizedKeysFile     .ssh/authorized_keys" >> /etc/ssh/sshd_config
-sed -i 's/PermitRootLogin yes/#PermitRootLogin no/g' /etc/ssh/sshd_config
-echo "PermitRootLogin no" >> /etc/ssh/sshd_config
-echo "$dname  ALL=(ALL)  ALL" >> /etc/sudoers
-service sshd restart
+#mkdir /root/.ssh
+#wget https://github.com/nexne/centos/raw/master/conf/ak -O /root/.ssh/authorized_keys
+#chmod 700 /root/.ssh
+#chmod 600 /root/.ssh/authorized_keys
+#echo "AuthorizedKeysFile     .ssh/authorized_keys" >> /etc/ssh/sshd_config
+#sed -i 's/PermitRootLogin yes/#PermitRootLogin no/g' /etc/ssh/sshd_config
+#echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+#echo "$dname  ALL=(ALL)  ALL" >> /etc/sudoers
+#service sshd restart
 
 # install webserver
-yum -y install nginx php-fpm php-cli
-service nginx restart
-service php-fpm restart
-chkconfig nginx on
-chkconfig php-fpm on
+#yum -y install nginx php-fpm php-cli
+#service nginx restart
+#service php-fpm restart
+#chkconfig nginx on
+#chkconfig php-fpm on
 
 # install essential package
 yum -y install rrdtool screen iftop htop nmap bc nethogs openvpn vnstat ngrep mtr git zsh mrtg unrar rsyslog rkhunter mrtg net-snmp net-snmp-utils expect nano bind-utils
@@ -123,52 +123,52 @@ echo "screenfetch" >> .bash_profile
 
 # install webserver
 cd
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/nginx.conf"
-sed -i 's/www-data/nginx/g' /etc/nginx/nginx.conf
-mkdir -p /home/vps/public_html
-echo "<pre>Setup by Khairil G</pre>" > /home/vps/public_html/index.html
-echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
-rm /etc/nginx/conf.d/*
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/vps.conf"
-sed -i 's/apache/nginx/g' /etc/php-fpm.d/www.conf
-chmod -R +rx /home/vps
-service php-fpm restart
-service nginx restart
+#wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/nginx.conf"
+#sed -i 's/www-data/nginx/g' /etc/nginx/nginx.conf
+#mkdir -p /home/vps/public_html
+#echo "<pre>Setup by Khairil G</pre>" > /home/vps/public_html/index.html
+#echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
+#rm /etc/nginx/conf.d/*
+#wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/vps.conf"
+#sed -i 's/apache/nginx/g' /etc/php-fpm.d/www.conf
+#chmod -R +rx /home/vps
+#service php-fpm restart
+#service nginx restart
 
 # install openvpn
-wget -O /etc/openvpn/openvpn.zip "https://github.com/nexne/centos/raw/master/conf/openvpn-key.zip"
-cd /etc/openvpn/
-unzip openvpn.tar
-wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/1194-centos.conf"
-if [ "$OS" == "x86_64" ]; then
-  wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/1194-centos64.conf"
-fi
-wget -O /etc/iptables.up.rules "https://raw.githubusercontent.com/nexne/centos/master/conf/iptables.up.rules"
-sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
-sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.d/rc.local
-MYIP=`curl icanhazip.com`;
-MYIP2="s/xxxxxxxxx/$MYIP/g";
-sed -i $MYIP2 /etc/iptables.up.rules;
-sed -i 's/venet0/eth0/g' /etc/iptables.up.rules
-iptables-restore < /etc/iptables.up.rules
-sysctl -w net.ipv4.ip_forward=1
-sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.conf
-service openvpn restart
-chkconfig openvpn on
-cd
+#wget -O /etc/openvpn/openvpn.zip "https://github.com/nexne/centos/raw/master/conf/openvpn-key.zip"
+#cd /etc/openvpn/
+#unzip openvpn.tar
+#wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/1194-centos.conf"
+#if [ "$OS" == "x86_64" ]; then
+#  wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/nexne/centos/master/conf/1194-centos64.conf"
+#fi
+#wget -O /etc/iptables.up.rules "https://raw.githubusercontent.com/nexne/centos/master/conf/iptables.up.rules"
+#sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
+#sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.d/rc.local
+#MYIP=`curl icanhazip.com`;
+#MYIP2="s/xxxxxxxxx/$MYIP/g";
+#sed -i $MYIP2 /etc/iptables.up.rules;
+#sed -i 's/venet0/eth0/g' /etc/iptables.up.rules
+#iptables-restore < /etc/iptables.up.rules
+#sysctl -w net.ipv4.ip_forward=1
+#sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.conf
+#service openvpn restart
+#chkconfig openvpn on
+#cd
 
 # configure openvpn client config
-cd /etc/openvpn/
-wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/nexne/centos/master/openvpn.conf"
-sed -i $MYIP2 /etc/openvpn/client.ovpn;
+#cd /etc/openvpn/
+#wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/nexne/centos/master/openvpn.conf"
+#sed -i $MYIP2 /etc/openvpn/client.ovpn;
 #PASS=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1`;
-useradd -g 0 -d /root/ -s /bin/bash $dname
-echo $dname:$dname"@2017" | chpasswd
-echo $dname > pass.txt
-echo $dname"@2017" >> pass.txt
-tar cf client.tar client.ovpn pass.txt
-cp client.tar /home/vps/public_html/
-cp client.ovpn /home/vps/public_html/
+#useradd -g 0 -d /root/ -s /bin/bash $dname
+#echo $dname:$dname"@2017" | chpasswd
+#echo $dname > pass.txt
+#echo $dname"@2017" >> pass.txt
+#tar cf client.tar client.ovpn pass.txt
+#cp client.tar /home/vps/public_html/
+#cp client.ovpn /home/vps/public_html/
 
 # install badvpn
 cd
@@ -202,6 +202,7 @@ LANG=C /usr/bin/mrtg /etc/mrtg/mrtg.cfg
 
 # setting port ssh
 cd
+sed -i '/Port 22/a Port 2147' /etc/ssh/sshd_config
 sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
 sed -i 's/#Port 22/Port  22/g' /etc/ssh/sshd_config
 service sshd restart
@@ -321,11 +322,11 @@ echo "* * * * * root /bin/sh /usr/bin/cron-dropcheck" > /etc/cron.d/dropcheck
 ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # finalisasi
-chown -R nginx:nginx /home/vps/public_html
-service nginx start
+#chown -R nginx:nginx /home/vps/public_html
+#service nginx start
 service php-fpm start
 service vnstat restart
-service openvpn restart
+#service openvpn restart
 service snmpd restart
 service sshd restart
 service dropbear restart
@@ -338,11 +339,11 @@ chkconfig crond on
 # info
 echo "Layanan yang diaktifkan"  | tee -a log-install.txt
 echo "--------------------------------------"  | tee -a log-install.txt
-echo "OpenVPN : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
+#echo "OpenVPN : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
 echo "Port OpenSSH : 22, 143"  | tee -a log-install.txt
 echo "Port Dropbear : 80, 109, 110, 443"  | tee -a log-install.txt
 echo "SquidProxy    : 8080, 8888, 3128 (limit to IP SSH)"  | tee -a log-install.txt
-echo "Nginx : 81"  | tee -a log-install.txt
+#echo "Nginx : 81"  | tee -a log-install.txt
 echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
 echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
 echo "vnstat   : http://$MYIP:81/vnstat/"  | tee -a log-install.txt
