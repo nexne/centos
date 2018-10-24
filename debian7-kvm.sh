@@ -62,7 +62,7 @@ apt-get -y remove sendmail*
 apt-get update; apt-get -y upgrade;
 
 # install webserver
-apt-get -y install nginx php5-fpm php5-cli
+#apt-get -y install nginx php5-fpm php5-cli
 
 # install essential package
 echo "mrtg mrtg/conf_mods boolean true" | debconf-set-selections
@@ -88,197 +88,6 @@ echo "clear" >> .profile
 echo "screenfetch" >> .profile
 
 # install webserver
-cd
-rm /etc/nginx/sites-enabled/default
-rm /etc/nginx/sites-available/default
-cat > /etc/nginx/nginx.conf <<END3
-user www-data;
-
-worker_processes 1;
-pid /var/run/nginx.pid;
-
-events {
-	multi_accept on;
-  worker_connections 1024;
-}
-
-http {
-	gzip on;
-	gzip_vary on;
-	gzip_comp_level 5;
-	gzip_types    text/plain application/x-javascript text/xml text/css;
-
-	autoindex on;
-  sendfile on;
-  tcp_nopush on;
-  tcp_nodelay on;
-  keepalive_timeout 65;
-  types_hash_max_size 2048;
-  server_tokens off;
-  include /etc/nginx/mime.types;
-  default_type application/octet-stream;
-  access_log /var/log/nginx/access.log;
-  error_log /var/log/nginx/error.log;
-  client_max_body_size 32M;
-	client_header_buffer_size 8m;
-	large_client_header_buffers 8 8m;
-
-	fastcgi_buffer_size 8m;
-	fastcgi_buffers 8 8m;
-
-	fastcgi_read_timeout 600;
-
-  include /etc/nginx/conf.d/*.conf;
-}
-END3
-mkdir -p /home/vps/public_html
-wget -O /home/vps/public_html/index.html "http://script.hostingtermurah.net/repo/index.html"
-echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
-args='$args'
-uri='$uri'
-document_root='$document_root'
-fastcgi_script_name='$fastcgi_script_name'
-cat > /etc/nginx/conf.d/vps.conf <<END4
-server {
-  listen       85;
-  server_name  127.0.0.1 localhost;
-  access_log /var/log/nginx/vps-access.log;
-  error_log /var/log/nginx/vps-error.log error;
-  root   /home/vps/public_html;
-
-  location / {
-    index  index.html index.htm index.php;
-    try_files $uri $uri/ /index.php?$args;
-  }
-
-  location ~ \.php$ {
-    include /etc/nginx/fastcgi_params;
-    fastcgi_pass  127.0.0.1:9000;
-    fastcgi_index index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-  }
-}
-
-END4
-sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
-service php5-fpm restart
-service nginx restart
-
-#install OpenVPN
-apt-get -y install openvpn iptables openssl
-cp -R /usr/share/doc/openvpn/examples/easy-rsa/ /etc/openvpn
-# easy-rsa
-if [[ ! -d /etc/openvpn/easy-rsa/2.0/ ]]; then
-	wget --no-check-certificate -O ~/easy-rsa.tar.gz https://github.com/OpenVPN/easy-rsa/archive/2.2.2.tar.gz
-    tar xzf ~/easy-rsa.tar.gz -C ~/
-    mkdir -p /etc/openvpn/easy-rsa/2.0/
-    cp ~/easy-rsa-2.2.2/easy-rsa/2.0/* /etc/openvpn/easy-rsa/2.0/
-    rm -rf ~/easy-rsa-2.2.2
-    rm -rf ~/easy-rsa.tar.gz
-fi
-cd /etc/openvpn/easy-rsa/2.0/
-# correct the error
-cp -u -p openssl-1.0.0.cnf openssl.cnf
-# replace bits
-sed -i 's|export KEY_SIZE=1024|export KEY_SIZE=2048|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="ID"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Albay"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Legazpi"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="0123456"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="0123456@daybreakersx.com"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_EMAIL=mail@host.domain|export KEY_EMAIL=0123456@daybreakersx.com|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_CN=changeme|export KEY_CN="0123456"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_NAME=changeme|export KEY_NAME=server|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_OU=changeme|export KEY_OU=0123456|' /etc/openvpn/easy-rsa/2.0/vars
-# create PKI
-. /etc/openvpn/easy-rsa/2.0/vars
-. /etc/openvpn/easy-rsa/2.0/clean-all
-# create certificate
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" --initca $*
-# create key server
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" --server server
-# setting KEY CN
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" client
-# DH params
-. /etc/openvpn/easy-rsa/2.0/build-dh
-# Setting Server
-cat > /etc/openvpn/server.conf <<-END
-port 1194
-proto tcp
-dev tun
-tun-mtu 1500
-tun-mtu-extra 32
-mssfix 1450
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/server.crt
-key /etc/openvpn/server.key
-dh /etc/openvpn/dh2048.pem
-plugin /usr/lib/openvpn/openvpn-auth-pam.so /etc/pam.d/login
-client-cert-not-required
-username-as-common-name
-server 192.168.100.0 255.255.255.0
-ifconfig-pool-persist ipp.txt
-push "redirect-gateway def1"
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
-push "route-method exe"
-push "route-delay 2"
-keepalive 5 30
-cipher AES-128-CBC
-comp-lzo
-persist-key
-persist-tun
-status server-vpn.log
-verb 3
-END
-cd /etc/openvpn/easy-rsa/2.0/keys
-cp ca.crt ca.key dh2048.pem server.crt server.key /etc/openvpn
-cd /etc/openvpn/
-
-#Create OpenVPN Config
-mkdir -p /home/vps/public_html
-cat > /home/vps/public_html/client.ovpn <<-END
-# OpenVPN Configuration by HostingTermurah.net
-# (Official Partner VPS-Murah.net)
-# Modified by 0123456
-client
-proto tcp
-persist-key
-persist-tun
-dev tun
-pull
-comp-lzo
-ns-cert-type server
-verb 3
-mute 2
-mute-replay-warnings
-auth-user-pass
-redirect-gateway def1
-script-security 2
-route 0.0.0.0 0.0.0.0
-route-method exe
-route-delay 2
-remote $MYIP 1194
-cipher AES-128-CBC
-END
-echo '<ca>' >> /home/vps/public_html/client.ovpn
-cat /etc/openvpn/ca.crt >> /home/vps/public_html/client.ovpn
-echo '</ca>' >> /home/vps/public_html/client.ovpn
-cd /home/vps/public_html/
-tar -czf /home/vps/public_html/openvpn.tar.gz client.ovpn
-tar -czf /home/vps/public_html/client.tar.gz client.ovpn
-cd
-
-# set ipv4 forward
-echo 1 > /proc/sys/net/ipv4/ip_forward
-sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward=1|' /etc/sysctl.conf
-sed -i 's|net.ipv4.ip_forward=0|net.ipv4.ip_forward=1|' /etc/sysctl.conf
-
-# Restart openvpn
-/etc/init.d/openvpn restart
 
 #install PPTP
 apt-get -y install pptpd
@@ -316,35 +125,36 @@ chmod +x /usr/bin/badvpn-udpgw
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # install mrtg
-wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/nexne/centos/master/snmpd.conf"
-wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/nexne/centos/master/mrtg-mem.sh"
-chmod +x /root/mrtg-mem.sh
-cd /etc/snmp/
-sed -i 's/TRAPDRUN=no/TRAPDRUN=yes/g' /etc/default/snmpd
-service snmpd restart
-snmpwalk -v 1 -c public localhost 1.3.6.1.4.1.2021.10.1.3.1
-mkdir -p /home/vps/public_html/mrtg
-cfgmaker --zero-speed 100000000 --global 'WorkDir: /home/vps/public_html/mrtg' --output /etc/mrtg.cfg public@localhost
-curl "https://raw.githubusercontent.com/daybreakersx/premscript/master/mrtg.conf" >> /etc/mrtg.cfg
-sed -i 's/WorkDir: \/var\/www\/mrtg/# WorkDir: \/var\/www\/mrtg/g' /etc/mrtg.cfg
-sed -i 's/# Options\[_\]: growright, bits/Options\[_\]: growright/g' /etc/mrtg.cfg
-indexmaker --output=/home/vps/public_html/mrtg/index.html /etc/mrtg.cfg
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-cd
+#wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/nexne/centos/master/snmpd.conf"
+#wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/nexne/centos/master/mrtg-mem.sh"
+#chmod +x /root/mrtg-mem.sh
+#cd /etc/snmp/
+#sed -i 's/TRAPDRUN=no/TRAPDRUN=yes/g' /etc/default/snmpd
+#service snmpd restart
+#snmpwalk -v 1 -c public localhost 1.3.6.1.4.1.2021.10.1.3.1
+#mkdir -p /home/vps/public_html/mrtg
+#cfgmaker --zero-speed 100000000 --global 'WorkDir: /home/vps/public_html/mrtg' --output /etc/mrtg.cfg public@localhost
+#curl "https://raw.githubusercontent.com/daybreakersx/premscript/master/mrtg.conf" >> /etc/mrtg.cfg
+#sed -i 's/WorkDir: \/var\/www\/mrtg/# WorkDir: \/var\/www\/mrtg/g' /etc/mrtg.cfg
+#sed -i 's/# Options\[_\]: growright, bits/Options\[_\]: growright/g' /etc/mrtg.cfg
+#indexmaker --output=/home/vps/public_html/mrtg/index.html /etc/mrtg.cfg
+#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
+#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
+#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
+#cd
 
 # setting port ssh
-sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
-sed -i '/Port 22/a Port  90' /etc/ssh/sshd_config
+#sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
+#sed -i '/Port 22/a Port  90' /etc/ssh/sshd_config
 sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
 service ssh restart
 
 # install dropbear
 apt-get -y install dropbear
 sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=443/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 109 -p 110"/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=442/g' /etc/default/dropbear
+#sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 109 -p 110"/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 442 -p 444 -p 90 -p 993 -p 995 -p 777 -p 143 -p 109 -p 110 -p 192 -p 427 -p 625 -p 1220 -K 3"/g' /etc/default/dropbear
 echo "/bin/false" >> /etc/shells
 service ssh restart
 service dropbear restart
@@ -363,17 +173,6 @@ cd && rm -rf dropbear-2018.76 && rm -rf dropbear-2018.76.tar.bz2
 service dropbear restart
 
 # install vnstat gui
-cd /home/vps/public_html/
-wget https://raw.githubusercontent.com/daybreakersx/premscript/master/vnstat_php_frontend-1.5.1.tar.gz
-tar xf vnstat_php_frontend-1.5.1.tar.gz
-rm vnstat_php_frontend-1.5.1.tar.gz
-mv vnstat_php_frontend-1.5.1 vnstat
-cd vnstat
-sed -i "s/\$iface_list = array('eth0', 'sixxs');/\$iface_list = array('eth0');/g" config.php
-sed -i "s/\$language = 'nl';/\$language = 'en';/g" config.php
-sed -i 's/Internal/Internet/g' config.php
-sed -i '/SixXS IPv6/d' config.php
-cd
 
 # install fail2ban
 apt-get -y install fail2ban;service fail2ban restart
@@ -402,17 +201,19 @@ http_access allow manager localhost
 http_access deny manager
 http_access allow localhost
 http_access deny all
-http_port 8888
 http_port 8080
+http_port 3130
+http_port 3000
+http_port 1080
 http_port 8000
-http_port 80
+http_port 8888
 http_port 3128
 coredump_dir /var/spool/squid3
 refresh_pattern ^ftp: 1440 20% 10080
 refresh_pattern ^gopher: 1440 0% 1440
 refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
 refresh_pattern . 0 20% 4320
-visible_hostname daybreakersx
+visible_hostname BoostVPN
 END
 sed -i $MYIP2 /etc/squid3/squid.conf;
 service squid3 restart
@@ -427,14 +228,7 @@ service stunnel4 restart
 
 # install webmin
 cd
-wget "https://prdownloads.sourceforge.net/webadmin/webmin_1.881_all.deb"
-dpkg --install webmin_1.881_all.deb;
-apt-get -y -f install;
-sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
-rm /root/webmin_1.881_all.deb
-service webmin restart
-service vnstat restart
-apt-get -y --force-yes -f install libxml-parser-perl
+
 
 #Setting IPtables
 cat > /etc/iptables.up.rules <<-END
@@ -489,19 +283,72 @@ service dropbear restart
 cd
 wget https://raw.githubusercontent.com/nexne/centos/master/install-premiumscript.sh -O - -o /dev/null|sh
 
+# Download script
+wget -O restart "https://raw.githubusercontent.com/nexne/32n64/master/resvis.sh"
+wget -O speedtest "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/speedtest_cli.py"
+wget -O bench-network "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/bench-network.sh"
+wget -O ps-mem "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/ps_mem.py"
+wget -O about "https://raw.githubusercontent.com/nexne/32n64/master/about.sh"
+wget -O delete "https://raw.githubusercontent.com/nexne/32n64/master/delete.sh"
+wget -O renew "https://raw.githubusercontent.com/nexne/32n64/master/renew.sh"
+wget -O kill "https://raw.githubusercontent.com/nexne/32n64/master/kill.sh"
+wget -O ban "https://raw.githubusercontent.com/nexne/32n64/master/ban.sh"
+wget -O unban "https://raw.githubusercontent.com/nexne/32n64/master/unban.sh"
+wget -O log "https://raw.githubusercontent.com/nexne/32n64/master/log.sh"
+wget -O rasakan "https://raw.githubusercontent.com/nexne/32n64/master/rasakan.sh"
+wget -O log1 "https://raw.githubusercontent.com/nexne/32n64/master/log1.sh"
+echo "0 0 * * * root /root/user-expired.sh" > /etc/cron.d/user-expired
+#echo "0 0 * * * root /usr/bin/expired" > /etc/cron.d/expired
+echo "0 0 * * * root /usr/bin/reboot" > /etc/cron.d/reboot
+echo "#* * * * * service dropbear restart" > /etc/cron.d/dropbear
+chmod +x menu
+chmod +x usernew
+chmod +x trial
+chmod +x hapus
+chmod +x login
+chmod +x dropmon
+#chmod +x user-expired
+#chmod +x userlimit.sh
+chmod +x member
+chmod +x restart
+chmod +x speedtest
+chmod +x bench-network
+chmod +x ps-mem
+chmod +x about
+chmod +x delete
+chmod +x renew
+#chmod +x user-expired.sh
+chmod +x kill
+chmod +x ban
+chmod +x unban
+chmod +x log
+chmod +x rasakan
+chmod +x log1
+cd
+echo "0 */12 * * * root /usr/bin/delete" >> /etc/crontab
+echo "#* * * * * root service dropbear restart" >> /etc/crontab
+echo "#0 */6 * * * root /usr/bin/restart" >> /etc/crontab
+#echo "#*/10 * * * * root service squid3 restart" >> /etc/crontab
+echo "#* * * * * root /usr/bin/kill" >> /etc/crontab
+#echo "#* * * * * root sleep 10; /usr/bin/kill" >> /etc/crontab
+echo "#0 */6 * * * root /usr/bin/ban" >> /etc/crontab
+echo "#* * * * * root /usr/bin/rasakan 2" >> /etc/crontab
+echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+service cron restart
+
 # finalizing
 apt-get -y autoremove
 chown -R www-data:www-data /home/vps/public_html
-service nginx start
-service php5-fpm start
-service vnstat restart
+#service nginx start
+#service php5-fpm start
+#service vnstat restart
 service openvpn restart
 service snmpd restart
 service ssh restart
 service dropbear restart
 service fail2ban restart
 service squid3 restart
-service webmin restart
+#service webmin restart
 service pptpd restart
 sysv-rc-conf rc.local on
 
