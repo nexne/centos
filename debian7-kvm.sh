@@ -35,7 +35,7 @@ sed -i '$ i\echo "nameserver 8.8.4.4" >> /etc/resolv.conf' /etc/rc.local
 apt-get update;apt-get -y install wget curl;
 
 # set time GMT +7
-ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
+ln -fs /usr/share/zoneinfo/Asia/Kuala_Lumpur /etc/localtime
 
 # set locale
 sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
@@ -77,12 +77,12 @@ sysv-rc-conf exim4 off
 apt-file update
 
 # setting vnstat
-vnstat -u -i eth0
-service vnstat restart
+#vnstat -u -i eth0
+#service vnstat restart
 
 # install screenfetch
 cd
-wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/daybreakersx/premscript/master/screenfetch"
+wget -O /usr/bin/screenfetch "https://raw.githubusercontent.com/nexne/centos/master/screenfetch"
 chmod +x /usr/bin/screenfetch
 echo "clear" >> .profile
 echo "screenfetch" >> .profile
@@ -307,17 +307,17 @@ mkdir /var/lib/premium-script
 /etc/init.d/pptpd restart
 
 # install badvpn
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/daybreakersx/premscript/master/badvpn-udpgw"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw"
 if [ "$OS" == "x86_64" ]; then
-  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/daybreakersx/premscript/master/badvpn-udpgw64"
+  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw64"
 fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
 chmod +x /usr/bin/badvpn-udpgw
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # install mrtg
-wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/daybreakersx/premscript/master/snmpd.conf"
-wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/daybreakersx/premscript/master/mrtg-mem.sh"
+wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/nexne/centos/master/snmpd.conf"
+wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/nexne/centos/master/mrtg-mem.sh"
 chmod +x /root/mrtg-mem.sh
 cd /etc/snmp/
 sed -i 's/TRAPDRUN=no/TRAPDRUN=yes/g' /etc/default/snmpd
@@ -352,7 +352,7 @@ service dropbear restart
 #Upgrade to Dropbear 2018
 cd
 apt-get install zlib1g-dev
-wget https://raw.githubusercontent.com/daybreakersx/premscript/master/dropbear-2018.76.tar.bz2
+wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2018.76.tar.bz2
 bzip2 -cd dropbear-2018.76.tar.bz2 | tar xvf -
 cd dropbear-2018.76
 ./configure
@@ -419,8 +419,8 @@ service squid3 restart
 
 # install stunnel4
 apt-get -y install stunnel4
-wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/daybreakersx/premscript/master/stunnel.pem"
-wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/daybreakersx/premscript/master/stunnel.conf"
+wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/nexne/centos/master/stunnel.pem"
+wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/nexne/centos/master/stunnel.conf"
 sed -i $MYIP2 /etc/stunnel/stunnel.conf
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
@@ -479,7 +479,7 @@ rm -rf /root/master.zip
 
 # setting banner
 rm /etc/issue.net
-wget -O /etc/issue.net "https://raw.githubusercontent.com/daybreakersx/premscript/master/issue.net"
+wget -O /etc/issue.net "https://raw.githubusercontent.com/nexne/centos/master/issue.net"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
 sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
 service ssh restart
@@ -487,7 +487,7 @@ service dropbear restart
 
 # download premium script
 cd
-wget https://raw.githubusercontent.com/daybreakersx/premscript/master/install-premiumscript.sh -O - -o /dev/null|sh
+wget https://raw.githubusercontent.com/nexne/centos/master/install-premiumscript.sh -O - -o /dev/null|sh
 
 # finalizing
 apt-get -y autoremove
