@@ -312,7 +312,6 @@ chmod +x usernew
 chmod +x trial
 chmod +x hapus
 chmod +x login
-chmod +x dropmon
 #chmod +x user-expired
 #chmod +x userlimit.sh
 chmod +x member
