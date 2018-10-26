@@ -284,6 +284,7 @@ cd
 wget https://raw.githubusercontent.com/nexne/centos/master/install-premiumscript.sh -O - -o /dev/null|sh
 
 # Download script
+cd /usr/bin
 wget -O restart "https://raw.githubusercontent.com/nexne/32n64/master/resvis.sh"
 wget -O usernew "https://raw.githubusercontent.com/nexne/32n64/master/usernew.sh"
 wget -O trial "https://raw.githubusercontent.com/nexne/32n64/master/trial.sh"
