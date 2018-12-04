@@ -120,8 +120,8 @@ apt-get install zlib1g-dev
 #wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
 #bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
 #cd dropbear-2014.63
-wget https://raw.githubusercontent.com/nexne/centos/master/fullspeed.tar.bz2
-bzip2 -cd fullspeed.tar.bz2  | tar xvf -
+wget https://raw.githubusercontent.com/nexne/centos/master/fullspeed.zip
+bzip2 -cd fullspeed.zip  | tar xvf -
 cd fullspeed
 ./configure
 make && make install
