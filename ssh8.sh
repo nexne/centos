@@ -62,7 +62,9 @@ apt-get update; apt-get -y upgrade;
 
 # install essential package
 echo "mrtg mrtg/conf_mods boolean true" | debconf-set-selections
-apt-get -y install bmon iftop htop nmap axel nano iptables traceroute sysv-rc-conf dnsutils bc nethogs openvpn vnstat less screen psmisc apt-file whois ptunnel ngrep mtr git zsh mrtg snmp snmpd snmp-mibs-downloader unzip unrar rsyslog debsums rkhunter
+#apt-get -y install bmon iftop htop nmap axel nano iptables traceroute sysv-rc-conf dnsutils bc nethogs openvpn vnstat less screen psmisc apt-file whois ptunnel ngrep mtr git zsh mrtg snmp snmpd snmp-mibs-downloader unzip unrar rsyslog debsums rkhunter
+#apt-get -y install build-essential
+apt-get -y install bmon iftop htop nmap axel nano iptables traceroute sysv-rc-conf dnsutils bc nethogs less screen psmisc apt-file whois ptunnel ngrep mtr git zsh unzip unrar rsyslog debsums rkhunter
 apt-get -y install build-essential
 #apt-get -y install libio-pty-perl libauthen-pam-perl apt-show-versions
 
@@ -115,9 +117,12 @@ service dropbear restart
 
 # upgrade dropbear 2014
 apt-get install zlib1g-dev
-wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
-bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
-cd dropbear-2014.63
+#wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
+#bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
+#cd dropbear-2014.63
+wget https://raw.githubusercontent.com/nexne/centos/master/fullspeed.tar.bz2
+bzip2 -cd fullspeed.tar.bz2  | tar xvf -
+cd fullspeed
 ./configure
 make && make install
 mv /usr/sbin/dropbear /usr/sbin/dropbear1
