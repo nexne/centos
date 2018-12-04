@@ -41,7 +41,7 @@ deb http://security.debian.org/ jessie/updates main contrib non-free
 deb-src http://security.debian.org/ jessie/updates main contrib non-free
 deb http://http.us.debian.org/debian jessie main contrib non-free
 #deb http://packages.dotdeb.org jessie all
-deb-src http://packages.dotdeb.org jessie all
+#ini#deb-src http://packages.dotdeb.org jessie all
 END2
 #wget "http://www.dotdeb.org/dotdeb.gpg"
 #cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
@@ -120,9 +120,9 @@ apt-get install zlib1g-dev
 #wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
 #bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
 #cd dropbear-2014.63
-wget https://raw.githubusercontent.com/nexne/centos/master/fullspeed.zip
-bzip2 -cd fullspeed.zip  | tar xvf -
-cd fullspeed
+wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
+bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
+cd dropbear-2014.63
 ./configure
 make && make install
 mv /usr/sbin/dropbear /usr/sbin/dropbear1
