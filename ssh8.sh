@@ -117,9 +117,9 @@ service dropbear restart
 
 # upgrade dropbear 2014
 apt-get install zlib1g-dev
-#wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
-#bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
-#cd dropbear-2014.63
+wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
+bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
+cd dropbear-2014.63
 ./configure
 make && make install
 mv /usr/sbin/dropbear /usr/sbin/dropbear1
@@ -256,9 +256,18 @@ mkdir /var/lib/premium-script
 #install OpenVPN
 
 # install badvpn
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw"
+#wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw"
+#if [ "$OS" == "x86_64" ]; then
+  #wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw64"
+#fi
+#sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
+#chmod +x /usr/bin/badvpn-udpgw
+#screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
+
+# install badvpn2
+wget -O /usr/bin/badvpn-udpgw "https://github.com/ForNesiaFreak/FNS/raw/master/sett/badvpn-udpgw"
 if [ "$OS" == "x86_64" ]; then
-  wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/nexne/centos/master/badvpn-udpgw64"
+  wget -O /usr/bin/badvpn-udpgw "https://github.com/ForNesiaFreak/FNS/raw/master/sett/badvpn-udpgw64"
 fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
 chmod +x /usr/bin/badvpn-udpgw
