@@ -39,12 +39,12 @@ ln -fs /usr/share/zoneinfo/Asia/Kuala_Lumpur /etc/localtime
 cat > /etc/apt/sources.list <<END2
 deb http://security.debian.org/ jessie/updates main contrib non-free
 deb-src http://security.debian.org/ jessie/updates main contrib non-free
-deb http://http.us.debian.org/debian jessie main contrib non-free
-deb http://packages.dotdeb.org jessie all
+#deb http://http.us.debian.org/debian jessie main contrib non-free
+#deb http://packages.dotdeb.org jessie all
 deb-src http://packages.dotdeb.org jessie all
 END2
-wget "http://www.dotdeb.org/dotdeb.gpg"
-cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
+#wget "http://www.dotdeb.org/dotdeb.gpg"
+#cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
 
 # remove unused
 apt-get -y --purge remove samba*;
@@ -101,23 +101,32 @@ sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 442 -p 444 -p 90 -p 993 -
 echo "/bin/false" >> /etc/shells
 service dropbear restart
 #Upgrade to Dropbear 2018
-cd
+#cd
+#apt-get install zlib1g-dev
+#wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2018.76.tar.bz2
+#bzip2 -cd dropbear-2018.76.tar.bz2 | tar xvf -
+#cd dropbear-2018.76
+#./configure
+#make && make install
+#mv /usr/sbin/dropbear /usr/sbin/dropbear.old
+#ln /usr/local/sbin/dropbear /usr/sbin/dropbear
+#cd && rm -rf dropbear-2018.76 && rm -rf dropbear-2018.76.tar.bz2
+#service dropbear restart
+
+# upgrade dropbear 2014
 apt-get install zlib1g-dev
-wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2018.76.tar.bz2
-bzip2 -cd dropbear-2018.76.tar.bz2 | tar xvf -
-cd dropbear-2018.76
+wget https://raw.githubusercontent.com/nexne/centos/master/dropbear-2014.63.tar.bz2
+bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
+cd dropbear-2014.63
 ./configure
 make && make install
-mv /usr/sbin/dropbear /usr/sbin/dropbear.old
+mv /usr/sbin/dropbear /usr/sbin/dropbear1
 ln /usr/local/sbin/dropbear /usr/sbin/dropbear
-cd && rm -rf dropbear-2018.76 && rm -rf dropbear-2018.76.tar.bz2
 service dropbear restart
 
-# install vnstat gui
-
 # install fail2ban
-apt-get -y install fail2ban
-service fail2ban restart
+#apt-get -y install fail2ban
+#service fail2ban restart
 
 # install squid3
 apt-get -y install squid3
@@ -160,16 +169,25 @@ sed -i $MYIP2 /etc/squid3/squid.conf;
 service squid3 restart
 
 # install stunnel4
-#apt-get -y install stunnel4
-#wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/daybreakersx/premscript/master/stunnel.pem"
-#wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/daybreakersx/premscript/master/stunnel.conf"
-#sed -i $MYIP2 /etc/stunnel/stunnel.conf
-#sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
-#service stunnel4 restart
-apt-get -y install stunnel4
-wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/nexne/centos/master/stunnel.pem"
-wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/nexne/centos/master/stunnel.conf"
-sed -i $MYIP2 /etc/stunnel/stunnel.conf
+apt-get install stunnel4 -y
+cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+[dropbear]
+connect = 127.0.0.1:995
+accept = 443
+[dropbear]
+connect = 127.0.0.1:993
+accept = 445
+END
+
+#membuat sertifikat
+openssl genrsa -out key.pem 2048
+openssl req -new -x509 -key key.pem -out cert.pem -days 1095
+cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
 
@@ -403,7 +421,8 @@ echo "#* * * * * root /usr/bin/kill" >> /etc/crontab
 #echo "#* * * * * root sleep 10; /usr/bin/kill" >> /etc/crontab
 echo "#0 */6 * * * root /usr/bin/ban" >> /etc/crontab
 echo "#* * * * * root /usr/bin/rasakan 2" >> /etc/crontab
-echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+#echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+echo "0 */12 * * * root /sbin/reboot" > /etc/cron.d/reboot
 service cron restart
 
 # finalizing
