@@ -33,22 +33,22 @@ service ssh restart
 #wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/sources.list.debian7"
 #wget "http://www.dotdeb.org/dotdeb.gpg"
 #cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
-wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/sources.list.debian7"
+#wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/sources.list.debian7"
 #wget "http://www.dotdeb.org/dotdeb.gpg"
 #wget "http://www.webmin.com/jcameron-key.asc"
 #cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
 cat jcameron-key.asc | apt-key add -;rm jcameron-key.asc
 
 # set repo
-cat > /etc/apt/sources.list <<END2
-deb http://security.debian.org/ jessie/updates main contrib non-free
-deb-src http://security.debian.org/ jessie/updates main contrib non-free
-deb http://http.us.debian.org/debian jessie main contrib non-free
-deb http://packages.dotdeb.org jessie all
-deb-src http://packages.dotdeb.org jessie all
-END2
-wget "http://www.dotdeb.org/dotdeb.gpg"
-cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
+#cat > /etc/apt/sources.list <<END2
+#deb http://security.debian.org/ jessie/updates main contrib non-free
+#deb-src http://security.debian.org/ jessie/updates main contrib non-free
+#deb http://http.us.debian.org/debian jessie main contrib non-free
+#deb http://packages.dotdeb.org jessie all
+#deb-src http://packages.dotdeb.org jessie all
+#END2
+#wget "http://www.dotdeb.org/dotdeb.gpg"
+#cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
 
 # remove unused
 apt-get -y --purge remove samba*;
@@ -194,9 +194,9 @@ service dropbear restart
 cd
 
 # install fail2ban
-apt-get -y install fail2ban;service fail2ban restart
-cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-service fail2ban restart
+#apt-get -y install fail2ban;service fail2ban restart
+#cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+#service fail2ban restart
 
 # Instal DDOS Flate
 if [ -d '/usr/local/ddos' ]; then
