@@ -74,8 +74,8 @@ sysv-rc-conf exim4 off
 apt-file update
 
 # setting vnstat
-vnstat -u -i venet0
-service vnstat restart
+#vnstat -u -i venet0
+#service vnstat restart
 
 # install screenfetch
 cd
@@ -170,9 +170,9 @@ apt-get install zlib1g-dev
 #wget https://github.com/ForNesiaFreak/FNS/raw/master/go/dropbear-2014.63.tar.bz2
 #bzip2 -cd dropbear-2014.63.tar.bz2  | tar xvf -
 #cd dropbear-2014.63
-wget https://matt.ucc.asn.au/dropbear/releases/dropbear-2018.76.tar.bz2
-bzip2 -cd dropbear-2018.76.tar.bz2  | tar xvf -
-cd dropbear-2018.76
+wget https://matt.ucc.asn.au/dropbear/releases/dropbear-2014.63.tar.bz2
+bzip2 -cd dropbear-2014.63.tar.bz2 | tar xvf -
+cd dropbear-2014.63
 ./configure
 make && make install
 mv /usr/sbin/dropbear /usr/sbin/dropbear1
@@ -302,18 +302,14 @@ service ssh restart
 #rm /root/webmin-current.deb
 #service webmin restart
 
-# download script
+# Download script
 cd /usr/bin
-wget -O menu "https://raw.githubusercontent.com/nexne/32n64/master/menu.sh"
+wget -O restart "https://raw.githubusercontent.com/nexne/32n64/master/resvis.sh"
 wget -O usernew "https://raw.githubusercontent.com/nexne/32n64/master/usernew.sh"
 wget -O trial "https://raw.githubusercontent.com/nexne/32n64/master/trial.sh"
 wget -O hapus "https://raw.githubusercontent.com/nexne/32n64/master/hapus.sh"
-wget -O login "https://raw.githubusercontent.com/nexne/32n64/master/user-login.sh"
-wget -O dropmon "https://raw.githubusercontent.com/nexne/32n64/master/dropmon.sh"
-#wget -O user-expired.sh "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/freak/user-expired.sh"
-#wget -O userlimit.sh "https://raw.githubusercontent.com/suryadewa/fornesiavps/fns/limit.sh"
+#wget -O login "https://raw.githubusercontent.com/nexne/32n64/master/user-login.sh"
 wget -O member "https://raw.githubusercontent.com/nexne/32n64/master/user-list.sh"
-wget -O restart "https://raw.githubusercontent.com/nexne/32n64/master/resvis.sh"
 wget -O speedtest "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/speedtest_cli.py"
 wget -O bench-network "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/bench-network.sh"
 wget -O ps-mem "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/ps_mem.py"
@@ -330,12 +326,11 @@ echo "0 0 * * * root /root/user-expired.sh" > /etc/cron.d/user-expired
 #echo "0 0 * * * root /usr/bin/expired" > /etc/cron.d/expired
 echo "0 0 * * * root /usr/bin/reboot" > /etc/cron.d/reboot
 echo "#* * * * * service dropbear restart" > /etc/cron.d/dropbear
-chmod +x menu
+#chmod +x menu
 chmod +x usernew
 chmod +x trial
 chmod +x hapus
-chmod +x login
-chmod +x dropmon
+#chmod +x login
 #chmod +x user-expired
 #chmod +x userlimit.sh
 chmod +x member
@@ -362,97 +357,79 @@ echo "#* * * * * root /usr/bin/kill" >> /etc/crontab
 #echo "#* * * * * root sleep 10; /usr/bin/kill" >> /etc/crontab
 echo "#0 */6 * * * root /usr/bin/ban" >> /etc/crontab
 echo "#* * * * * root /usr/bin/rasakan 2" >> /etc/crontab
-echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+#echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+echo "0 */12 * * * root /sbin/reboot" > /etc/cron.d/reboot
 service cron restart
 
-#Blockir Torrent
-iptables -A OUTPUT -p tcp --dport 6881:6889 -j DROP
-iptables -A OUTPUT -p udp --dport 1024:65534 -j DROP
-iptables -A FORWARD -m string --string "get_peers" --algo bm -j DROP
-iptables -A FORWARD -m string --string "announce_peer" --algo bm -j DROP
-iptables -A FORWARD -m string --string "find_node" --algo bm -j DROP
-iptables -A FORWARD -m string --algo bm --string "BitTorrent" -j DROP
-iptables -A FORWARD -m string --algo bm --string "BitTorrent protocol" -j DROP
-iptables -A FORWARD -m string --algo bm --string "peer_id=" -j DROP
-iptables -A FORWARD -m string --algo bm --string ".torrent" -j DROP
-iptables -A FORWARD -m string --algo bm --string "announce.php?passkey=" -j DROP
-iptables -A FORWARD -m string --algo bm --string "torrent" -j DROP
-iptables -A FORWARD -m string --algo bm --string "announce" -j DROP
-iptables -A FORWARD -m string --algo bm --string "info_hash" -j DROP
-#BrutoFurse
-iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
-iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 600 --hitcount 3 --rttl --name SSH -j LOG --log-prefix "SSH_Brute_Force"
-iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 600 --hitcount 3 --rttl --name SSH -j DROP
-
-# finishing
-cd
+# finalizing
+apt-get -y autoremove
 #chown -R www-data:www-data /home/vps/public_html
 #service nginx start
-#service php-fpm start
+#service php5-fpm start
 #service vnstat restart
 #service openvpn restart
 #service snmpd restart
-service cron restart
 service ssh restart
 service dropbear restart
-#service fail2ban restart
+service fail2ban restart
 service squid3 restart
 #service webmin restart
-rm -rf ~/.bash_history && history -c
-echo "unset HISTFILE" >> /etc/profile
+service pptpd restart
+sysv-rc-conf rc.local on
+
+#clearing history
+history -c
 
 # info
 clear
-echo "Autoscript Include:" | tee log-install.txt
-echo "===========================================" | tee -a log-install.txt
+echo " "
+echo "Installation has been completed!!"
+echo " "
+echo "--------------------------- Configuration Setup Server -------------------------"
+echo "                         Copyright HostingTermurah.net                          "
+echo "                        https://www.hostingtermurah.net                         "
+echo "               Created By Steven Indarto(fb.com/stevenindarto2)                 "
+echo "                                Modified by 0123456                             "
+echo "--------------------------------------------------------------------------------"
 echo ""  | tee -a log-install.txt
-echo "Service"  | tee -a log-install.txt
-echo "-------"  | tee -a log-install.txt
-echo "OpenSSH  : 22, 143"  | tee -a log-install.txt
-echo "Dropbear : 443, 80"  | tee -a log-install.txt
-echo "Squid3   : 8080, 3128 (limit to IP SSH)"  | tee -a log-install.txt
-#echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
-echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
-echo "nginx    : 81"  | tee -a log-install.txt
+echo "Server Information"  | tee -a log-install.txt
+echo "   - Timezone    : Asia/Manila (GMT +8)"  | tee -a log-install.txt
+echo "   - Fail2Ban    : [ON]"  | tee -a log-install.txt
+echo "   - Dflate      : [ON]"  | tee -a log-install.txt
+echo "   - IPtables    : [ON]"  | tee -a log-install.txt
+echo "   - Auto-Reboot : [OFF]"  | tee -a log-install.txt
+echo "   - IPv6        : [OFF]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Script"  | tee -a log-install.txt
-echo "------"  | tee -a log-install.txt
-echo "menu (Menampilkan daftar perintah yang tersedia)"  | tee -a log-install.txt
-echo "usernew (Membuat Akun SSH)"  | tee -a log-install.txt
-echo "trial (Membuat Akun Trial)"  | tee -a log-install.txt
-echo "hapus (Menghapus Akun SSH)"  | tee -a log-install.txt
-echo "login (Cek User Login)"  | tee -a log-install.txt
-echo "dropmon (Cek Dropbear Login)"  | tee -a log-install.txt
-echo "user-expired (Auto Lock User Expire tiap jam 00:00)"  | tee -a log-install.txt
-echo "member (Cek Member SSH)"  | tee -a log-install.txt
-echo "restart (Restart Service dropbear, webmin, squid3, openvpn dan ssh)"  | tee -a log-install.txt
-echo "reboot (Reboot VPS)"  | tee -a log-install.txt
-echo "speedtest (Speedtest VPS)"  | tee -a log-install.txt
-echo "bench-network (Cek Kualitas VPS)"  | tee -a log-install.txt
-echo "ps-mem (Cek RAM)"  | tee -a log-install.txt
-echo "about (Informasi tentang script auto install)"  | tee -a log-install.txt
+echo "Application & Port Information"  | tee -a log-install.txt
+echo "   - OpenVPN     : TCP 1194 "  | tee -a log-install.txt
+echo "   - OpenSSH     : 22, 143"  | tee -a log-install.txt
+echo "   - Stunnel4    : 442"  | tee -a log-install.txt
+echo "   - Dropbear    : 109, 110, 443"  | tee -a log-install.txt
+echo "   - Squid Proxy : 80, 3128, 8000, 8080, 8888 (limit to IP Server)"  | tee -a log-install.txt
+echo "   - Badvpn      : 7300"  | tee -a log-install.txt
+echo "   - Nginx       : 85"  | tee -a log-install.txt
+echo "   - PPTP VPN    : 1732"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Account Default (utk SSH dan VPN)"  | tee -a log-install.txt
-echo "---------------"  | tee -a log-install.txt
-echo "User     : thornssh"  | tee -a log-install.txt
-echo "Password : yonatankanu"  | tee -a log-install.txt
+echo "Server Tools"  | tee -a log-install.txt
+echo "   - htop"  | tee -a log-install.txt
+echo "   - iftop"  | tee -a log-install.txt
+echo "   - mtr"  | tee -a log-install.txt
+echo "   - nethogs"  | tee -a log-install.txt
+echo "   - screenfetch"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Fitur lain"  | tee -a log-install.txt
-echo "----------"  | tee -a log-install.txt
-echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
-echo "vnstat   : http://$MYIP/vnstat/"  | tee -a log-install.txt
-echo "MRTG     : http://$MYIP/mrtg/"  | tee -a log-install.txt
-echo "Timezone : Asia/Jakarta (GMT +7)"  | tee -a log-install.txt
-echo "Fail2Ban : [on]"  | tee -a log-install.txt
-echo "IPv6     : [off]"  | tee -a log-install.txt
+echo "Premium Script Information"  | tee -a log-install.txt
+echo "   To display list of commands: menu"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "http://"  | tee -a log-install.txt
-echo "Modified"  | tee -a log-install.txt
+echo "   Explanation of scripts and VPS setup" | tee -a log-install.txt
+echo "   follow this link: http://bit.ly/penjelasansetup"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Log Instalasi --> /root/log-install.txt"  | tee -a log-install.txt
+echo "Important Information"  | tee -a log-install.txt
+echo "   - Download Config OpenVPN : http://$MYIP:85/client.ovpn"  | tee -a log-install.txt
+echo "     Mirror (*.tar.gz)       : http://$MYIP:85/openvpn.tar.gz"  | tee -a log-install.txt
+echo "   - Webmin                  : http://$MYIP:10000/"  | tee -a log-install.txt
+echo "   - Vnstat                  : http://$MYIP:85/vnstat/"  | tee -a log-install.txt
+echo "   - MRTG                    : http://$MYIP:85/mrtg/"  | tee -a log-install.txt
+echo "   - Installation Log        : cat /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "VPS AUTO REBOOT TIAP 12 JAM"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "==========================================="  | tee -a log-install.txt
-cd
-rm -f /root/coba.sh
+echo "----------- Script Created By Steven Indarto(fb.com/stevenindarto2) ------------"
+echo "------------------------------ Modified by 0123456 -----------------------------"
