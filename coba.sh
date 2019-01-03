@@ -88,36 +88,6 @@ chmod +x /usr/bin/screenfetch-dev
 echo "clear" >> .profile
 echo "screenfetch-dev" >> .profile
 
-# install webserver
-#cd
-#rm /etc/nginx/sites-enabled/default
-#rm /etc/nginx/sites-available/default
-#wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/nginx.conf"
-#mkdir -p /home/vps/public_html
-#echo "<pre>Setup by Yonatan Kanu | 085707136028</pre>" > /home/vps/public_html/index.html
-#wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/nifira123/debian7_32bit/master/vps.conf"
-#service nginx restart
-
-# install openvpn
-#wget -O /etc/openvpn/openvpn.tar "https://raw.github.com/arieonline/autoscript/master/conf/openvpn-debian.tar"
-#cd /etc/openvpn/
-#tar xf openvpn.tar
-#wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/1194.conf"
-#service openvpn restart
-#sysctl -w net.ipv4.ip_forward=1
-#sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
-#iptables -t nat -I POSTROUTING -s 192.168.100.0/24 -o eth0 -j MASQUERADE
-#iptables-save > /etc/iptables_yg_baru_dibikin.conf
-#wget -O /etc/network/if-up.d/iptables "https://raw.githubusercontent.com/nifira123/debian7_32bit/master/iptables"
-#chmod +x /etc/network/if-up.d/iptables
-#service openvpn restart
-
-#konfigurasi openvpn
-#cd /etc/openvpn/
-#wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/nifira123/debian7_32bit/master/client-1194.conf"
-#sed -i $MYIP2 /etc/openvpn/client.ovpn;
-#cp client.ovpn /home/vps/public_html/
-
 cd
 # install badvpn
 wget -O /usr/bin/badvpn-udpgw "https://github.com/ForNesiaFreak/FNS/raw/master/sett/badvpn-udpgw"
@@ -128,28 +98,9 @@ sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/
 chmod +x /usr/bin/badvpn-udpgw
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
-# install mrtg
-#wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/snmpd.conf"
-#wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/mrtg-mem.sh"
-#chmod +x /root/mrtg-mem.sh
-#cd /etc/snmp/
-#sed -i 's/TRAPDRUN=no/TRAPDRUN=yes/g' /etc/default/snmpd
-#service snmpd restart
-#snmpwalk -v 1 -c public localhost 1.3.6.1.4.1.2021.10.1.3.1
-#mkdir -p /home/vps/public_html/mrtg
-#cfgmaker --zero-speed 100000000 --global 'WorkDir: /home/vps/public_html/mrtg' --output /etc/mrtg.cfg public@localhost
-#curl "https://raw.githubusercontent.com/rizal180499/Auto-Installer-VPS/master/conf/mrtg.conf" >> /etc/mrtg.cfg
-#sed -i 's/WorkDir: \/var\/www\/mrtg/# WorkDir: \/var\/www\/mrtg/g' /etc/mrtg.cfg
-#sed -i 's/# Options\[_\]: growright, bits/Options\[_\]: growright/g' /etc/mrtg.cfg
-#indexmaker --output=/home/vps/public_html/mrtg/index.html /etc/mrtg.cfg
-#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-#if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
 cd
 
 # setting port ssh
-#sed -i '/Port 22/a Port 2147' /etc/ssh/sshd_config
-#sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
 sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
 service ssh restart
 
@@ -179,18 +130,6 @@ mv /usr/sbin/dropbear /usr/sbin/dropbear1
 ln /usr/local/sbin/dropbear /usr/sbin/dropbear
 service dropbear restart
 
-# install vnstat gui
-#cd /home/vps/public_html/
-#wget https://github.com/ForNesiaFreak/FNS/raw/master/go/vnstat_php_frontend-1.5.1.tar.gz
-#tar xf vnstat_php_frontend-1.5.1.tar.gz
-#rm vnstat_php_frontend-1.5.1.tar.gz
-#mv vnstat_php_frontend-1.5.1 vnstat
-#cd vnstat
-#sed -i 's/eth0/venet0/g' config.php
-#sed -i "s/\$iface_list = array('venet0', 'sixxs');/\$iface_list = array('venet0');/g" config.php
-#sed -i "s/\$language = 'nl';/\$language = 'en';/g" config.php
-#sed -i 's/Internal/Internet/g' config.php
-#sed -i '/SixXS IPv6/d' config.php
 cd
 
 # install fail2ban
@@ -289,18 +228,12 @@ sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
 
 # bannerssh
-wget https://raw.githubusercontent.com/nexne/32n64/master/bannerssh
-mv ./bannerssh /bannerssh
-chmod 0644 /bannerssh
-service dropbear restart
+rm /etc/issue.net
+wget -O /etc/issue.net "https://raw.githubusercontent.com/nexne/centos/master/issue.net"
+sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
+sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
 service ssh restart
-# install webmin
-#cd
-#wget -O webmin-current.deb "http://www.webmin.com/download/deb/webmin-current.deb"
-#dpkg -i --force-all webmin-current.deb;
-#apt-get -y -f install;
-#rm /root/webmin-current.deb
-#service webmin restart
+service dropbear restart
 
 # Download script
 cd /usr/bin
