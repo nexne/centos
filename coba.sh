@@ -102,6 +102,7 @@ cd
 
 # setting port ssh
 sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port  21098' /etc/ssh/sshd_config
 service ssh restart
 
 # install dropbear
@@ -238,7 +239,7 @@ wget -O restart "https://raw.githubusercontent.com/nexne/32n64/master/resvis.sh"
 wget -O usernew "https://raw.githubusercontent.com/nexne/32n64/master/usernew.sh"
 wget -O trial "https://raw.githubusercontent.com/nexne/32n64/master/trial.sh"
 wget -O hapus "https://raw.githubusercontent.com/nexne/32n64/master/hapus.sh"
-#wget -O login "https://raw.githubusercontent.com/nexne/32n64/master/user-login.sh"
+wget -O user-login "https://raw.githubusercontent.com/nexne/32n64/master/user-login.sh"
 wget -O member "https://raw.githubusercontent.com/nexne/32n64/master/user-list.sh"
 wget -O speedtest "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/speedtest_cli.py"
 wget -O bench-network "https://raw.githubusercontent.com/ForNesiaFreak/FNS_Debian7/fornesia.com/null/bench-network.sh"
@@ -260,7 +261,7 @@ echo "#* * * * * service dropbear restart" > /etc/cron.d/dropbear
 chmod +x usernew
 chmod +x trial
 chmod +x hapus
-#chmod +x login
+chmod +x user-login
 #chmod +x user-expired
 #chmod +x userlimit.sh
 chmod +x member
