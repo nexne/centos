@@ -134,9 +134,9 @@ service dropbear restart
 cd
 
 # install fail2ban
-#apt-get -y install fail2ban;service fail2ban restart
-#cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-#service fail2ban restart
+apt-get -y install fail2ban;service fail2ban restart
+cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+service fail2ban restart
 
 # Instal DDOS Flate
 if [ -d '/usr/local/ddos' ]; then
