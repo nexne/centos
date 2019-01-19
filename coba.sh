@@ -287,8 +287,8 @@ echo "#* * * * * root /usr/bin/kill" >> /etc/crontab
 #echo "#* * * * * root sleep 10; /usr/bin/kill" >> /etc/crontab
 echo "#0 */6 * * * root /usr/bin/ban" >> /etc/crontab
 echo "#* * * * * root /usr/bin/rasakan 2" >> /etc/crontab
-#echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
-echo "0 */12 * * * root /sbin/reboot" > /etc/cron.d/reboot
+echo "0 3 * * * root /sbin/reboot" > /etc/cron.d/reboot
+#echo "0 */12 * * * root /sbin/reboot" > /etc/cron.d/reboot
 service cron restart
 
 # finalizing
